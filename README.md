@@ -1,4 +1,4 @@
-# FinanceRAG 📊💰
+# FinanceRAG 
 
 A production-ready Retrieval-Augmented Generation (RAG) system specialized for financial document analysis. Built with Python, FastAPI, ChromaDB, and Claude API.
 
@@ -6,21 +6,20 @@ A production-ready Retrieval-Augmented Generation (RAG) system specialized for f
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green.svg)](https://fastapi.tiangolo.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## 🎯 Overview
+##  Overview
 
 FinanceRAG helps financial analysts, investors, and researchers quickly extract insights from earnings reports, financial statements, SEC filings, and analyst reports. It combines vector search with LLMs to provide accurate, cited answers to complex financial questions.
 
 ### Key Features
 
-- 📈 **Financial Document Support**: PDF, DOCX, TXT processing
-- 🔍 **Semantic Search**: ChromaDB vector store with sentence-transformers
-- 🤖 **Claude Integration**: Powered by Anthropic's Claude Sonnet 4
-- 📊 **Real-time Metrics**: Performance tracking dashboard
-- 🎨 **Modern UI**: Clean Flask/React interface
-- ⚡ **High Performance**: <500ms average response time
-- 🔒 **Secure**: API key management, rate limiting
+-  **Financial Document Support**: PDF, DOCX, TXT processing
+-  **Semantic Search**: ChromaDB vector store with sentence-transformers
+-  **Claude Integration**: Powered by Anthropic's Claude Sonnet 4
+-  **Real-time Metrics**: Performance tracking dashboard
+-  **High Performance**: <500ms average response time
+-  **Secure**: API key management, rate limiting
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Prerequisites
 
@@ -58,7 +57,7 @@ python src/main.py
 # Open browser to http://localhost:8000
 ```
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 financial-rag-system/
@@ -73,14 +72,6 @@ financial-rag-system/
 │   ├── api/
 │   │   ├── routes.py           # API endpoints
 │   │   └── schemas.py          # Pydantic models
-├── frontend/
-│   ├── templates/
-│   │   └── index.html          # UI template
-│   └── static/
-│       ├── css/
-│       │   └── styles.css      # Styling
-│       └── js/
-│           └── app.js          # Frontend logic
 ├── tests/
 │   ├── test_vector_store.py
 │   ├── test_document_processor.py
@@ -95,7 +86,7 @@ financial-rag-system/
 └── README.md
 ```
 
-## 🎮 Usage
+##  Usage
 
 ### Upload Documents
 
@@ -118,7 +109,7 @@ curl -X POST "http://localhost:8000/api/query" \
 curl "http://localhost:8000/api/metrics"
 ```
 
-## 📊 Performance Benchmarks
+##  Performance Benchmarks
 
 | Metric | Target | Actual |
 |--------|--------|--------|
@@ -127,7 +118,7 @@ curl "http://localhost:8000/api/metrics"
 | Retrieval Accuracy | >85% | 89.3% |
 | Answer Relevance | >90% | 94.1% |
 
-## 🏗️ Architecture
+##  Architecture
 
 ### Components
 
@@ -155,7 +146,7 @@ curl "http://localhost:8000/api/metrics"
 - Chart.js - Metrics visualization
 - Modern CSS - Clean, responsive design
 
-## 🔬 Technical Details
+## Technical Details
 
 ### Chunking Strategy
 
@@ -185,7 +176,7 @@ Quality: 89.3% retrieval accuracy
 5. Generate response with citations
 ```
 
-## 🧪 Testing
+##  Testing
 
 ```bash
 # Run all tests
@@ -198,7 +189,7 @@ pytest --cov=src tests/
 pytest tests/test_vector_store.py -v
 ```
 
-## 📈 Evaluation Results
+##  Evaluation Results
 
 Tested on 100 financial Q&A pairs from earnings calls:
 
@@ -208,52 +199,46 @@ Tested on 100 financial Q&A pairs from earnings calls:
 - **Average Latency**: 380ms
 - **Cost per Query**: $0.003
 
-## 🛣️ Roadmap
+## Roadmap
 
-### ✅ Phase 1: Core Features (Completed)
+###  Phase 1: Core Features (Completed)
 - [x] Document upload and processing
 - [x] ChromaDB vector store
 - [x] Claude API integration
 - [x] FastAPI backend
 - [x] Web UI with metrics
 
-### 🚧 Phase 2: Enhancements (In Progress)
+###  Phase 2: Enhancements (In Progress)
 - [ ] Hybrid search (vector + BM25)
 - [ ] Reranking with cross-encoder
 - [ ] Multi-document comparison
 - [ ] Export to PDF/Excel
 - [ ] User authentication
 
-### 📝 Phase 3: Advanced Features
+###  Phase 3: Advanced Features
 - [ ] Time-series analysis
 - [ ] Financial entity extraction
 - [ ] Sentiment analysis
 - [ ] Portfolio optimization queries
 - [ ] API rate limiting and caching
 
-## 🤝 Contributing
 
-Contributions welcome! Please see [CONTRIBUTING.md](docs/CONTRIBUTING.md).
 
-## 📄 License
-
-MIT License - see [LICENSE](LICENSE)
-
-## 👤 Author
+##  Author
 
 **Your Name**
-- GitHub: [@yourusername](https://github.com/yourusername)
-- LinkedIn: [yourname](https://linkedin.com/in/yourname)
-- Email: your.email@example.com
+- GitHub: [@yourusername](https://github.com/faizan-abbas-mir)
+- LinkedIn: [yourname](www.linkedin.com/in/faizanabbasmir)
+- Email: faixanmir21.fm@gmail.com
 
-## 🙏 Acknowledgments
+##  Acknowledgments
 
 - Anthropic for Claude API
 - ChromaDB team
 - FastAPI community
 - Financial data providers
 
-## 📚 Resources
+##  Resources
 
 - [Technical Blog Post](docs/BLOG.md)
 - [API Documentation](docs/API.md)
@@ -261,4 +246,4 @@ MIT License - see [LICENSE](LICENSE)
 
 ---
 
-⭐ **Star this repo if you find it helpful!**
+ **Star this repo if you find it helpful!**
