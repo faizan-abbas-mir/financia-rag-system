@@ -226,8 +226,8 @@ Tested on 100 financial Q&A pairs from earnings calls:
 ##  Author
 
 **Your Name**
-- GitHub: [@yourusername](https://github.com/faizan-abbas-mir)
-- LinkedIn: [yourname](www.linkedin.com/in/faizanabbasmir)
+- GitHub: [@faizanabbasmir](https://github.com/faizan-abbas-mir)
+- LinkedIn: [@faizanabbasmir](www.linkedin.com/in/faizanabbasmir)
 - Email: faixanmir21.fm@gmail.com
 
 ##  Acknowledgments
