@@ -4,7 +4,7 @@ uvicorn[standard]==0.24.0
 python-multipart==0.0.6
 
 # Vector Store & Embeddings
-chromadb==0.4.18
+pinecone-client>=3.0.0
 sentence-transformers==2.2.2
 
 # Document Processing
