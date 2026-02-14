@@ -33,8 +33,11 @@ async def lifespan(app: FastAPI):
     
     # Initialize vector store
     vector_store = VectorStore(
-        persist_directory=os.getenv("CHROMA_PERSIST_DIRECTORY", "./chroma_db"),
-        embedding_model=os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
+        api_key=os.getenv("PINECONE_API_KEY"),
+        index_name=os.getenv("PINECONE_INDEX_NAME", "financial-documents"),
+        embedding_model=os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2"),
+        cloud=os.getenv("PINECONE_CLOUD", "aws"),
+        region=os.getenv("PINECONE_REGION", "us-east-1")
     )
     
     # Initialize metrics collector

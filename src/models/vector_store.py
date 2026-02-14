@@ -1,147 +1,157 @@
 """
-Vector Store Implementation using ChromaDB
+Vector Store Implementation using Pinecone
 Handles document embeddings, storage, and similarity search
 """
 
-import chromadb
-from chromadb.config import Settings
+from pinecone import Pinecone, ServerlessSpec
 from sentence_transformers import SentenceTransformer
 from typing import List, Dict, Optional
 import uuid
+import time
 
 
 class VectorStore:
     """
     Vector store for managing document embeddings and retrieval
-    Uses ChromaDB for persistent storage and sentence-transformers for embeddings
+    Uses Pinecone Serverless for cloud-hosted storage and sentence-transformers for embeddings
     """
-    
-    def __init__(self, persist_directory: str = "./chroma_db", 
+
+    def __init__(self, api_key: str,
+                 index_name: str = "financial-documents",
                  embedding_model: str = "all-MiniLM-L6-v2",
-                 collection_name: str = "financial_documents"):
+                 cloud: str = "aws",
+                 region: str = "us-east-1"):
         """
         Initialize the vector store
-        
+
         Args:
-            persist_directory: Directory to persist ChromaDB data
+            api_key: Pinecone API key
+            index_name: Name of the Pinecone index
             embedding_model: Sentence transformer model name
-            collection_name: Name of the ChromaDB collection
+            cloud: Cloud provider for serverless (aws, gcp, azure)
+            region: Cloud region for serverless
         """
-        self.persist_directory = persist_directory
+        self.index_name = index_name
         self.embedding_model_name = embedding_model
-        
+
         # Initialize embedding model
         print(f"Loading embedding model: {embedding_model}...")
         self.embedding_model = SentenceTransformer(embedding_model)
-        
-        # Initialize ChromaDB client
-        self.client = chromadb.PersistentClient(
-            path=persist_directory,
-            settings=Settings(
-                anonymized_telemetry=False,
-                allow_reset=True
+        dimension = self.embedding_model.get_sentence_embedding_dimension()
+
+        # Initialize Pinecone client
+        self.client = Pinecone(api_key=api_key)
+
+        # Create index if it doesn't exist
+        existing_indexes = [idx.name for idx in self.client.list_indexes()]
+        if index_name not in existing_indexes:
+            self.client.create_index(
+                name=index_name,
+                dimension=dimension,
+                metric="cosine",
+                spec=ServerlessSpec(cloud=cloud, region=region)
             )
-        )
-        
-        # Get or create collection
-        self.collection = self.client.get_or_create_collection(
-            name=collection_name,
-            metadata={"hnsw:space": "cosine"}
-        )
-        
-        print(f"✅ Vector store initialized with {self.collection.count()} documents")
-    
+            # Wait for index to be ready
+            while not self.client.describe_index(index_name).status['ready']:
+                time.sleep(1)
+
+        # Connect to the index
+        self.index = self.client.Index(index_name)
+
+        stats = self.index.describe_index_stats()
+        print(f"Vector store initialized with {stats.total_vector_count} documents")
+
     def add_documents(self, texts: List[str], metadatas: Optional[List[Dict]] = None) -> List[str]:
         """
         Add documents to the vector store
-        
+
         Args:
             texts: List of text chunks to add
             metadatas: Optional list of metadata dicts for each chunk
-            
+
         Returns:
             List of document IDs
         """
         if not texts:
             return []
-        
+
         # Generate embeddings
         embeddings = self.embedding_model.encode(texts, show_progress_bar=False).tolist()
-        
+
         # Generate IDs
         ids = [str(uuid.uuid4()) for _ in texts]
-        
-        # Prepare metadatas
+
+        # Prepare metadatas — store text in metadata for retrieval
         if metadatas is None:
             metadatas = [{}] * len(texts)
-        
-        # Add to collection
-        self.collection.add(
-            embeddings=embeddings,
-            documents=texts,
-            metadatas=metadatas,
-            ids=ids
-        )
-        
+
+        vectors = []
+        for i, (doc_id, embedding, text) in enumerate(zip(ids, embeddings, texts)):
+            metadata = {**metadatas[i], "text": text}
+            vectors.append((doc_id, embedding, metadata))
+
+        # Upsert in batches of 100 (Pinecone recommended batch size)
+        batch_size = 100
+        for i in range(0, len(vectors), batch_size):
+            batch = vectors[i:i + batch_size]
+            self.index.upsert(vectors=batch)
+
         return ids
-    
+
     def search(self, query: str, top_k: int = 3) -> List[Dict]:
         """
         Search for relevant documents
-        
+
         Args:
             query: Search query
             top_k: Number of results to return
-            
+
         Returns:
             List of dicts with 'text', 'metadata', 'score', 'id'
         """
         # Generate query embedding
         query_embedding = self.embedding_model.encode([query], show_progress_bar=False).tolist()[0]
-        
-        # Search ChromaDB
-        results = self.collection.query(
-            query_embeddings=[query_embedding],
-            n_results=top_k,
-            include=["documents", "metadatas", "distances"]
+
+        # Search Pinecone
+        results = self.index.query(
+            vector=query_embedding,
+            top_k=top_k,
+            include_metadata=True
         )
-        
+
         # Format results
         formatted_results = []
-        if results['documents'] and results['documents'][0]:
-            for i, doc in enumerate(results['documents'][0]):
-                formatted_results.append({
-                    'text': doc,
-                    'metadata': results['metadatas'][0][i] if results['metadatas'] else {},
-                    'score': 1 - results['distances'][0][i],  # Convert distance to similarity
-                    'id': results['ids'][0][i] if results['ids'] else None
-                })
-        
+        for match in results.matches:
+            metadata = dict(match.metadata) if match.metadata else {}
+            text = metadata.pop("text", "")
+            formatted_results.append({
+                'text': text,
+                'metadata': metadata,
+                'score': match.score,
+                'id': match.id
+            })
+
         return formatted_results
-    
+
     def delete_documents(self, ids: List[str]) -> None:
         """Delete documents by IDs"""
-        self.collection.delete(ids=ids)
-    
+        self.index.delete(ids=ids)
+
     def get_collection_stats(self) -> Dict:
-        """Get statistics about the collection"""
+        """Get statistics about the index"""
+        stats = self.index.describe_index_stats()
         return {
-            'total_documents': self.collection.count(),
+            'total_documents': stats.total_vector_count,
             'embedding_model': self.embedding_model_name,
-            'collection_name': self.collection.name
+            'collection_name': self.index_name
         }
-    
+
     def reset(self) -> None:
-        """Clear all documents from the collection"""
-        self.client.delete_collection(self.collection.name)
-        self.collection = self.client.get_or_create_collection(
-            name=self.collection.name,
-            metadata={"hnsw:space": "cosine"}
-        )
-    
+        """Clear all documents from the index"""
+        self.index.delete(delete_all=True)
+
     def close(self) -> None:
         """Cleanup resources"""
-        # ChromaDB client doesn't need explicit closing
         pass
 
 
