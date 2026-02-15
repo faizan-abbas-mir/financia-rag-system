@@ -24,6 +24,11 @@ pydantic-settings==2.1.0
 # Utilities
 python-dotenv==1.0.0
 aiofiles==23.2.1
+requests==2.31.0
+
+# UI Framework
+streamlit==1.28.1
+pandas==2.1.1
 
 # Testing
 pytest==7.4.3
