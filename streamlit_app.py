@@ -186,15 +186,15 @@ with tab1:
                                 )
                 
                 else:
-                    st.error(f"❌ Error: {response.status_code}")
+                    st.error(f"Error: {response.status_code}")
                     st.error(response.json().get('detail', 'Unknown error'))
                     
             except requests.exceptions.Timeout:
-                st.error("⏱️ Request timeout. The API took too long to respond.")
+                st.error(" Request timeout. The API took too long to respond.")
             except requests.exceptions.ConnectionError:
-                st.error("🔌 Connection error. Please check if the FastAPI server is running.")
+                st.error(" Connection error. Please check if the FastAPI server is running.")
             except Exception as e:
-                st.error(f"❌ Error: {str(e)}")
+                st.error(f" Error: {str(e)}")
     
     elif submit_button:
         st.warning("Please enter a query")
@@ -212,7 +212,7 @@ with tab2:
     )
     
     if uploaded_files:
-        st.subheader(f"📋 Selected Files ({len(uploaded_files)})")
+        st.subheader(f" Selected Files ({len(uploaded_files)})")
         
         # Display file info
         files_data = []
@@ -225,7 +225,7 @@ with tab2:
         
         st.dataframe(pd.DataFrame(files_data), use_container_width=True)
         
-        if st.button("⬆️ Upload & Process", use_container_width=True):
+        if st.button("⬆ Upload & Process", use_container_width=True):
             progress_bar = st.progress(0)
             status_container = st.container()
             
@@ -248,7 +248,7 @@ with tab2:
                         result = response.json()
                         
                         with status_container:
-                            st.success(f"✅ {uploaded_file.name}")
+                            st.success(f" {uploaded_file.name}")
                             st.success(f"Created {result.get('chunks_created', 0)} chunks")
                         
                         st.session_state.uploaded_files.append({
@@ -259,7 +259,7 @@ with tab2:
                         })
                     else:
                         with status_container:
-                            st.error(f"❌ Failed to upload {uploaded_file.name}")
+                            st.error(f" Failed to upload {uploaded_file.name}")
                         
                         st.session_state.uploaded_files.append({
                             "filename": uploaded_file.name,
@@ -270,7 +270,7 @@ with tab2:
                 
                 except Exception as e:
                     with status_container:
-                        st.error(f"❌ Error uploading {uploaded_file.name}: {str(e)}")
+                        st.error(f"Error uploading {uploaded_file.name}: {str(e)}")
                 
                 # Update progress bar
                 progress_bar.progress((idx + 1) / len(uploaded_files))
@@ -295,30 +295,30 @@ with tab3:
             
             with col1:
                 st.metric(
-                    "📄 Total Documents",
+                    " Total Documents",
                     metrics.get('total_documents', 0),
                     help="Number of documents in the system"
                 )
                 st.metric(
-                    "⏱️ Avg Latency (ms)",
+                    "Avg Latency (ms)",
                     f"{metrics.get('avg_latency_ms', 0):.0f}",
                     help="Average query response time"
                 )
             
             with col2:
                 st.metric(
-                    "🔍 Total Queries",
+                    " Total Queries",
                     metrics.get('total_queries', 0),
                     help="Number of queries processed"
                 )
                 st.metric(
-                    "⭐ Avg Relevance",
+                    "Avg Relevance",
                     f"{metrics.get('avg_relevance', 0):.2f}",
                     help="Average relevance score of retrieved documents"
                 )
             
             # System Health
-            st.markdown("### 🏥 System Health")
+            st.markdown("###  System Health")
             health_response = requests.get(
                 f"{st.session_state.api_url}/health",
                 timeout=5
@@ -366,7 +366,7 @@ with tab4:
                 hide_index=True
             )
             
-            if st.button("🗑️ Clear History"):
+            if st.button(" Clear History"):
                 st.session_state.query_history = []
                 st.rerun()
         else:
@@ -389,7 +389,7 @@ with tab4:
                 hide_index=True
             )
             
-            if st.button("🗑️ Clear Upload History"):
+            if st.button(" Clear Upload History"):
                 st.session_state.uploaded_files = []
                 st.rerun()
         else:
